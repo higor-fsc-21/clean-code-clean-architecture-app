@@ -12,14 +12,13 @@ app.use(cors());
 
 const accountRepository = new AccountRepositoryDatabase();
 const mailerGateway = new MailerGatewayMemory();
-const registry = new Registry();
-registry.register("accountRepository", accountRepository);
-registry.register("mailerGateway", mailerGateway);
+Registry.getInstance().register("accountRepository", accountRepository);
+Registry.getInstance().register("mailerGateway", mailerGateway);
 
 app.post("/signup", async function (req, res) {
   const input = req.body;
   try {
-    const signup = new Signup(registry);
+    const signup = new Signup();
     const output = await signup.execute(input);
     res.json(output);
   } catch (e: any) {

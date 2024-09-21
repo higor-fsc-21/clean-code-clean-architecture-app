@@ -18,10 +18,9 @@ beforeEach(() => {
   // fake
   const accountRepository = new AccountRepositoryDatabase();
   const mailerGateway = new MailerGatewayMemory();
-  const register = new Registry();
-  register.register("mailerGateway", mailerGateway);
-  register.register("accountRepository", accountRepository);
-  signup = new Signup(register);
+  Registry.getInstance().register("mailerGateway", mailerGateway);
+  Registry.getInstance().register("accountRepository", accountRepository);
+  signup = new Signup();
   getAccount = new GetAccount(accountRepository);
 });
 

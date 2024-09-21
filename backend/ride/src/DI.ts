@@ -1,7 +1,8 @@
 export class Registry {
+  private static instance: Registry;
   private dependencies: Map<string, any>;
 
-  constructor() {
+  private constructor() {
     this.dependencies = new Map();
   }
 
@@ -12,4 +13,10 @@ export class Registry {
   public inject<T>(name: string): T {
     return this.dependencies.get(name);
   }
+
+  // Singleton pattern
+  public static getInstance = () => {
+    if (!this.instance) Registry.instance = new Registry();
+    return Registry.instance;
+  };
 }

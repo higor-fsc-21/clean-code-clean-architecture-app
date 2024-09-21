@@ -9,9 +9,9 @@ export default class Signup {
   private mailerGateway?: MailerGateway;
 
   // Dependency Inversion Principle - DIP
-  constructor(registry: Registry) {
-    this.mailerGateway = registry.inject("mailerGateway");
-    this.accountRepository = registry.inject("accountRepository");
+  constructor() {
+    this.mailerGateway = Registry.getInstance().inject("mailerGateway");
+    this.accountRepository = Registry.getInstance().inject("accountRepository");
   }
 
   async execute(input: any) {
