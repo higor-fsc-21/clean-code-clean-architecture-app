@@ -1,25 +1,35 @@
-import crypto from "crypto";
-import { validateCpf } from "./validateCpf";
-import AccountDAO from "./AccountDAO";
+import AccountRepository from "./AccountRepository";
 import MailerGateway from "./MailerGateway";
+import Account from "./Account";
+import { Registry } from "./DI";
 
+// anemic model (transaction script) -> object oriented design
 export default class Signup {
+  private accountRepository?: AccountRepository;
+  private mailerGateway?: MailerGateway;
 
-	constructor (readonly accountDAO: AccountDAO, readonly mailerGateway: MailerGateway) {
-	}
+  // Dependency Inversion Principle - DIP
+  constructor(registry: Registry) {
+    this.mailerGateway = registry.inject("mailerGateway");
+    this.accountRepository = registry.inject("accountRepository");
+  }
 
-	async execute (input: any) {
-		input.accountId = crypto.randomUUID();
-		const accountData = await this.accountDAO.getAccountByEmail(input.email);
-		if (accountData) throw new Error("Duplicated account");
-		if (!input.name.match(/[a-zA-Z] [a-zA-Z]+/)) throw new Error("Invalid name");
-		if (!input.email.match(/^(.+)@(.+)$/)) throw new Error("Invalid email");
-		if (!validateCpf(input.cpf)) throw new Error("Invalid cpf")
-		if (input.isDriver && !input.carPlate.match(/[A-Z]{3}[0-9]{4}/)) throw new Error("Invalid car plate");
-		await this.accountDAO.saveAccount(input);
-		await this.mailerGateway.send(input.email, "Welcome!", "...");
-		return {
-			accountId: input.accountId
-		};
-	}
+  async execute(input: any) {
+    const accountData = await this.accountRepository?.getAccountByEmail(
+      input.email
+    );
+    if (accountData) throw new Error("Duplicated account");
+    const account = Account.create(
+      input.email,
+      input.name,
+      input.cpf,
+      input.isDriver,
+      input.isPassenger,
+      input.carPlate,
+      input.password
+    );
+    await this.accountRepository?.saveAccount(account);
+    await this.mailerGateway?.send(account.getEmail(), "Welcome!", "...");
+    return { accountId: account.getAccountId() };
+  }
 }
