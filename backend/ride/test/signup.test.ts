@@ -21,7 +21,7 @@ beforeEach(() => {
   Registry.getInstance().register("mailerGateway", mailerGateway);
   Registry.getInstance().register("accountRepository", accountRepository);
   signup = new Signup();
-  getAccount = new GetAccount(accountRepository);
+  getAccount = new GetAccount();
 });
 
 test("Deve criar a conta de um passageiro", async function () {

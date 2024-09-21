@@ -1,18 +1,14 @@
 import AccountRepository from "./AccountRepository";
 import MailerGateway from "./MailerGateway";
 import Account from "./Account";
-import { Registry } from "./DI";
+import { inject } from "./DI";
 
 // anemic model (transaction script) -> object oriented design
 export default class Signup {
+  @inject("accountRepository")
   private accountRepository?: AccountRepository;
+  @inject("mailerGateway")
   private mailerGateway?: MailerGateway;
-
-  // Dependency Inversion Principle - DIP
-  constructor() {
-    this.mailerGateway = Registry.getInstance().inject("mailerGateway");
-    this.accountRepository = Registry.getInstance().inject("accountRepository");
-  }
 
   async execute(input: any) {
     const accountData = await this.accountRepository?.getAccountByEmail(

@@ -20,3 +20,10 @@ export class Registry {
     return Registry.instance;
   };
 }
+
+// decorator
+export const inject = (name: string) => {
+  return (target: any, propertyKey: string) => {
+    target[propertyKey] = Registry.getInstance().inject(name);
+  };
+};
