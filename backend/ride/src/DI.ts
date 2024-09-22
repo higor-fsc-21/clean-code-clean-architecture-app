@@ -22,8 +22,16 @@ export class Registry {
 }
 
 // decorator
-export const inject = (name: string) => {
+export const inject = <T>(name: string) => {
   return (target: any, propertyKey: string) => {
-    target[propertyKey] = Registry.getInstance().inject(name);
+    target[propertyKey] = new Proxy(
+      {},
+      {
+        get: (target: any, propertyKey: string) => {
+          const dependency = Registry.getInstance().inject<T>(name);
+          return dependency[propertyKey as keyof T];
+        },
+      }
+    );
   };
 };
